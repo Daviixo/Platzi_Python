@@ -2,7 +2,7 @@ from netmiko import ConnectHandler
 
 def main():
 
-    get_host_name = input('Host name? (Do NOT add expertcity.com! Example: asr1k.las\n')
+    get_host_name = input('Host name? (Do NOT add expertcity.com! Example: asr1k.las)\n')
     get_username = 'ddiaz'
     get_password = input('Please input your password.\n')
     run_command(get_host_name, get_username, get_password)
