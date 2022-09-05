@@ -1,10 +1,11 @@
 from netmiko import ConnectHandler
+import getpass as gp
 
 def main():
 
     get_host_name = input('Host name? (Do NOT add expertcity.com! Example: asr1k.las)\n')
     get_username = 'ddiaz'
-    get_password = input('Please input your password.\n')
+    get_password = gp.getpass()
     run_command(get_host_name, get_username, get_password)
 
 def run_command(s_host, s_username, s_password):
@@ -18,10 +19,12 @@ def run_command(s_host, s_username, s_password):
         password = s_password,
     )
 
+    exec_command = 'show ip bgp all neighbors 10.16.10.52 | include Description|BGP state|Interface associated|Last reset'
+
     output = net_connect.send_command(
-        "show ip bgp all neighbors 10.16.10.52 | include Description|BGP state|Interface associated|Last reset"
+        exec_command
     )
-    print(output)
+    print(f'\nCommand executed: {exec_command} \nResults:\n {output}')
 
 
 if __name__ == '__main__':
