@@ -19,11 +19,14 @@ def main():
 
 def read_username():
 
-    with open('username.txt', 'r', encoding='utf-8') as f:
-        username = f.readline()
-        print(f'Username is {username}')
+    try:
+        with open('username.txt', 'r', encoding='utf-8') as f:
+            username = f.readline()
+            print(f'Username is {username}')
 
-    return username
+        return username
+    except:
+        print('Please make sure you have the "username.txt" file with your user on it :D')
 
 
 def run_command(s_host, s_username, s_password, s_ip, s_fqdn):
@@ -97,8 +100,11 @@ def run_command(s_host, s_username, s_password, s_ip, s_fqdn):
             
         else:
             print('Interface is up!')
+
+        net_connect.disconnect()
         
     except:
+        net_connect.disconnect()
         print('Something went wrong! Please review your credentials and try again :D')
 
 if __name__ == '__main__':
