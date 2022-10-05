@@ -1,3 +1,4 @@
+import email
 from netmiko import ConnectHandler
 import getpass as gp
 
@@ -71,11 +72,13 @@ def run_command(s_host, s_username, s_password, s_ip, s_fqdn):
         print(f'\nCommand executed: {show_local_command} \nResults:\n{output_local}\n')
         print(f'\nCommand executed: {show_local_interface_command} \nResults:\n{output_local_interface}\n')
 
-        #print(f'\nLen for local interface: {len(output_local_interface)}\n')
+        print(f'\nLen for local interface: {len(output_local_interface)}\n')
 
         local_interface = ''
 
-        if len(output_local_interface) < 50:
+        if len(output_local_interface) > 53:
+
+            print('\nDoing TERSE\n')
 
             split_output_local = output_local.split()
 
@@ -138,6 +141,8 @@ def run_command(s_host, s_username, s_password, s_ip, s_fqdn):
 
         print(f'\nCommand executed: {show_interfaces_description_command} \nResults:\n{output_interfaces_description}\n')
         
+        # This will validate if the interface is DOWN.
+
         if 'up' in output_interfaces_description:
             print(f'\nInterface is down\n')
 
@@ -149,12 +154,8 @@ def run_command(s_host, s_username, s_password, s_ip, s_fqdn):
             print(f'\nThis is just the CID we need: {get_cid}')
 
             print("""
-            
-For VSP Peers follow Addressing VSP Alerts -SOP 
-(https://confluence.ops.expertcity.com/display/NPV/Addressing+VSP+Alerts+-SOP)
 
-For AWS Peers follow 169.254.X.X BGP alerts (NOC)
-https://confluence.ops.expertcity.com/pages/viewpage.action?pageId=198357312
+---- COMMON SCENARIO ----
 
 There is a planned maintenance going on by the provider
     Using the CID or Peer IP
@@ -171,7 +172,6 @@ An unannounced internal change or decommission happen
     Check Jira tickets
         Resolution: educate the person that did the change about the change management process and ask for an SDT on the alerts or them to be removed if no longer needed
 
-
 This is the Contact & Escalation link: 
 https://confluence.ops.expertcity.com/pages/viewpage.action?pageId=86823796
 
@@ -181,9 +181,13 @@ https://confluence.ops.expertcity.com/pages/viewpage.action?pageId=86823796
 
             #Email goes here
 
+            is_s_p2p = 'S-P2P'
             is_switch = False
 
-            template = switch_template(get_cid, output_interfaces_description, is_switch)
+            if is_s_p2p in output_interfaces_description:
+                is_switch = True
+
+            template = email_template(get_cid, output_interfaces_description, is_switch)
 
             print(template)
 
@@ -198,9 +202,10 @@ https://confluence.ops.expertcity.com/pages/viewpage.action?pageId=86823796
         print('Something went wrong! Please review your credentials and try again :D')
 
 
-#This function will help us generate the email's tempalte when needed, if SWITCH security code is a must. Otherwise, it will not be added.
+#This function will help us generate the email's tempalte when needed, 
+#if SWITCH security code is a must. Otherwise, it will not be added.
 
-def switch_template(cid, interfaces_description, is_switch):
+def email_template(cid, interfaces_description, is_switch):
 
     if is_switch is True:
         
